@@ -17,7 +17,7 @@ public class RandomPlayer implements Player{
 
     @Override
     public Direction nextMove(Labyrinth l) {
-        int randomMove = (int)(Math.random())*(l.possibleMoves().size());       
+        int randomMove = (int)(Math.random())*(l.possibleMoves().size()-1);       
         return l.possibleMoves().get(randomMove);
     }
     
