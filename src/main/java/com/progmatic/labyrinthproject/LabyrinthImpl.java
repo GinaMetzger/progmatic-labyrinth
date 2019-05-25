@@ -88,8 +88,8 @@ public class LabyrinthImpl implements Labyrinth {
     @Override
     public void setSize(int width, int height) {
         CellType [][] newLabyrinth = new CellType[height][width];
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        for (int i = 0; i < newLabyrinth.length; i++) {
+            for (int j = 0; j < newLabyrinth.length; j++) {
                 newLabyrinth[i][j] = CellType.EMPTY;
            
             }  
@@ -100,9 +100,11 @@ public class LabyrinthImpl implements Labyrinth {
 
     @Override
     public void setCellType(Coordinate c, CellType type) throws CellException {
-        if(!labyrinth[c.getCol()][c.getRow()].equals(type)){
-            labyrinth[c.getCol()][c.getRow()] = type;
+        
+        if (type == CellType.START) {
+            playerPosition = c;
         }
+        labyrinth[c.getRow()][c.getCol()] = type;
         
         if(c.getRow() > labyrinth.length || c.getRow() < 0 || c.getCol() > labyrinth.length || c.getCol()<0){
             throw new CellException(c, "Cell is not exist");
@@ -117,7 +119,7 @@ public class LabyrinthImpl implements Labyrinth {
 
     @Override
     public boolean hasPlayerFinished() {
-        if(labyrinth[playerPosition.getCol()][playerPosition.getRow()].equals(CellType.END)){
+        if(labyrinth[playerPosition.getRow()][playerPosition.getCol()] == CellType.END){
             return true;
         }
         return false;
@@ -126,21 +128,17 @@ public class LabyrinthImpl implements Labyrinth {
     @Override
     public List<Direction> possibleMoves() {
         List<Direction> directions = new ArrayList<>();
-        for (int i = 0; i < labyrinth.length; i++) {
-            for (int j = 0; j < labyrinth.length; j++) {
-                if(!labyrinth[playerPosition.getCol()][playerPosition.getRow()-1].equals(CellType.WALL)){
-                    directions.add(Direction.NORTH);
-                }
-                if(!labyrinth[playerPosition.getCol()][playerPosition.getRow()+1].equals(CellType.WALL)){
-                    directions.add(Direction.SOUTH);
-                }               
-                if(!labyrinth[playerPosition.getCol()-1][playerPosition.getRow()].equals(CellType.WALL)){
-                    directions.add(Direction.WEST);
-                }
-                if(!labyrinth[playerPosition.getCol()+1][playerPosition.getRow()].equals(CellType.WALL)){
-                    directions.add(Direction.EAST);
-                }
-            }          
+        if(!labyrinth[playerPosition.getRow()-1][playerPosition.getCol()].equals(CellType.WALL)){
+            directions.add(Direction.NORTH);
+        }
+        if(!labyrinth[playerPosition.getRow()+1][playerPosition.getCol()].equals(CellType.WALL)){
+            directions.add(Direction.SOUTH);
+        }               
+        if(!labyrinth[playerPosition.getRow()][playerPosition.getCol()-1].equals(CellType.WALL)){
+            directions.add(Direction.WEST);
+        }
+        if(!labyrinth[playerPosition.getRow()][playerPosition.getCol()+1].equals(CellType.WALL)){
+            directions.add(Direction.EAST);
         }
         
         return directions;
@@ -148,7 +146,37 @@ public class LabyrinthImpl implements Labyrinth {
 
     @Override
     public void movePlayer(Direction direction) throws InvalidMoveException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch (direction){
+            case NORTH:
+                if(labyrinth[playerPosition.getRow()-1][playerPosition.getCol()] == CellType.WALL){
+                    throw new InvalidMoveException();
+                } else {
+                     playerPosition = new Coordinate(playerPosition.getCol(), playerPosition.getRow()-1);
+                }
+                break;
+            case SOUTH:
+                if(labyrinth[playerPosition.getRow()+1][playerPosition.getCol()] == CellType.WALL){
+                    throw new InvalidMoveException();
+                } else {
+                    playerPosition = new Coordinate(playerPosition.getCol(), playerPosition.getRow()+1);
+                }
+                break;
+            case WEST:
+                if(labyrinth[playerPosition.getRow()][playerPosition.getCol()-1] ==CellType.WALL){
+                    throw new InvalidMoveException();
+                } else {
+                    playerPosition = new Coordinate(playerPosition.getCol()-1, playerPosition.getRow());
+                }
+                break;
+            case EAST:
+                if(labyrinth[playerPosition.getRow()][playerPosition.getCol()+1] == CellType.WALL){
+                    throw new InvalidMoveException();
+                } else {
+                    playerPosition = new Coordinate( playerPosition.getCol()+1, playerPosition.getRow());
+                }
+                break;
+        }
+            
     }
 
 }
